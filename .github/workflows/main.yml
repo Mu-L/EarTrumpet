@@ -41,20 +41,20 @@ jobs:
       max-parallel: 3
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         
       - name: Fetch all history for all tags and branches
         run: git fetch --prune --unshallow
         
       - name: Install GitVersion
-        uses: gittools/actions/gitversion/setup@v0.9.7
+        uses: gittools/actions/gitversion/setup@v0.9.15
         with:
           versionSpec: '5.x'
           includePrerelease: false
 
       - name: Use GitVersion
         id: gitversion
-        uses: gittools/actions/gitversion/execute@v0.9.7
+        uses: gittools/actions/gitversion/execute@v0.9.15
 
       - name: Create artifact layout
         shell: powershell
@@ -137,7 +137,7 @@ jobs:
       
       - name: Upload appxupload artifact
         if: matrix.channel == 'Store' && github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v1.0.0
+        uses: actions/upload-artifact@v3
         with:
           name: appxupload
           path: artifacts/appxupload
@@ -149,7 +149,7 @@ jobs:
 
       - name: Upload loose artifacts
         if: matrix.channel == 'Chocolatey' && github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v1.0.0
+        uses: actions/upload-artifact@v3
         with:
           name: loose
           path: artifacts/loose
@@ -172,7 +172,7 @@ jobs:
 
       - name: Upload appinstaller/sideload package artifacts
         if: matrix.channel == 'AppInstaller' && github.event_name != 'pull_request'
-        uses: actions/upload-artifact@v1.0.0
+        uses: actions/upload-artifact@v3
         with:
           name: sideload
           path: artifacts/sideload
@@ -198,7 +198,7 @@ jobs:
           Copy-Item packaging\ -Recurse "$env:ARTIFACTS_BASE\metadata\"
 
       - name: Upload metadata artifacts
-        uses: actions/upload-artifact@v1.0.0
+        uses: actions/upload-artifact@v3
         with:
           name: metadata
           path: artifacts/metadata
@@ -210,7 +210,7 @@ jobs:
           Copy-Item .chocolatey\* -Recurse "$env:ARTIFACTS_BASE\chocolatey\"
           
       - name: Upload chocolatey artifacts
-        uses: actions/upload-artifact@v1.0.0
+        uses: actions/upload-artifact@v3
         with:
           name: chocolatey
           path: artifacts/chocolatey
@@ -228,7 +228,7 @@ jobs:
       AZURE_CLIENT_SECRET: ${{ secrets.azure_client_secret }}
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           path: artifacts
 
@@ -388,7 +388,7 @@ jobs:
 
       - name: Upload chocolatey artifact
         if: matrix.channel == 'Chocolatey'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: chocolatey-package
           path: artifacts/chocolatey/*.nupkg
@@ -435,8 +435,6 @@ jobs:
         run: |
           Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
           Install-Module -Name StoreBroker
-
-          $global:SBDisableTelemetry = $true
 
           $Password = ConvertTo-SecureString '${{ secrets.partnercenter_clientkey }}' -AsPlainText -Force
           $Credentials = New-Object System.Management.Automation.PSCredential ('${{ secrets.partnercenter_clientid }}', $Password)
